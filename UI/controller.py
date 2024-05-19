@@ -12,8 +12,8 @@ class Controller:
         anno = int(self._view._txtAnno.value)
         if 1816 < anno < 2016:
             grafo = self._model.creaGrafo(anno)
-            self._view._txt_result.controls.append(
-                ft.Text(f"componenti connesse: {len(list(nx.connected_components(grafo)))}"))
+            self._view._txt_result.controls.clear()
+            self._view._txt_result.controls.append(ft.Text(f"componenti connesse: {len(list(nx.connected_components(grafo)))}"))
             for stato in grafo.nodes:
                 self._view._txt_result.controls.append(ft.Text(f"{stato.__str__()}: {grafo.degree()[stato]} stati confinanti"))
             self._view._btnRaggiungibili.disabled = False
@@ -28,7 +28,13 @@ class Controller:
             self._view._ddStati.options.append(ft.dropdown.Option(text=stato.nome, key=stato.codice))
 
     def handleRaggiungibili(self, e):
-        ragg = self._model.trovaRaggiungibili(self._view._ddStati.value)
+        #METODO NETWORKX
+        #ragg = self._model.trovaRaggiungibili(int(self._view._ddStati.value))
+
+        #METODO RICORSIVO
+        sorg = self._model.trovaStato(int(self._view._ddStati.value))
+        self._model.trovaRaggiungibiliRicorsione([], sorg, sorg)
+        ragg = self._model.listaRagg
         self._view._txt_result.controls.clear()
         for stato in ragg:
             self._view._txt_result.controls.append(ft.Text(f"{stato.__str__()}"))

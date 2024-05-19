@@ -1,6 +1,8 @@
+import copy
+
 import networkx as nx
 from database.DAO import DAO
-import flet as ft
+
 
 class Model:
 
@@ -10,6 +12,7 @@ class Model:
         for paese in self._listaPaesi:
             self._idMap[paese.codice] = paese
         self._grafo = nx.Graph()
+        self.listaRagg = []
 
     def creaGrafo(self, anno):
         self._grafo.clear()
@@ -33,6 +36,19 @@ class Model:
 
     def trovaRaggiungibili(self, codStato):
         print(codStato)
-        stato = self._idMap[int(codStato)]
+        stato = self._idMap[codStato]
         raggiungibili = nx.bfs_tree(self._grafo, stato)
         return [s for s in raggiungibili]
+
+    def trovaRaggiungibiliRicorsione(self, parziale, stato, sorg):
+        if stato == sorg and parziale != []:
+            return parziale
+        else:
+            for nodo in self._grafo.neighbors(stato):
+                if nodo not in parziale:
+                    parziale.append(nodo)
+                    self.trovaRaggiungibiliRicorsione(parziale, nodo, sorg)
+        self.listaRagg = copy.deepcopy(parziale)
+
+    def trovaStato(self, cod):
+        return self._idMap[cod]
